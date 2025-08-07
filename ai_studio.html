@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>업그레이드 구구단 연습 프로그램</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f2f5;
+        }
+        .container {
+            text-align: center;
+            padding: 40px;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px_12px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 400px;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 24px;
+        }
+        .dan-selector {
+            margin-bottom: 20px;
+        }
+        .dan-selector label {
+            margin-right: 10px;
+            font-size: 1rem;
+            color: #555;
+        }
+        #dan-select {
+            padding: 8px;
+            font-size: 1rem;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+        #problem {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: #007bff;
+            font-weight: bold;
+            height: 50px; /* 문제 변경 시 레이아웃 흔들림 방지 */
+        }
+        input[type="number"] {
+            width: calc(100% - 24px);
+            padding: 12px;
+            font-size: 1.2rem;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            font-size: 1.2rem;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #new-problem-btn {
+            margin-top: 10px;
+            background-color: #28a745;
+        }
+        #new-problem-btn:hover {
+            background-color: #218838;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            height: 30px; /* 메시지 영역 높이 고정 */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>구구단 연습</h1>
+
+        <div class="dan-selector">
+            <label for="dan-select">원하는 단을 선택하세요:</label>
+            <select id="dan-select">
+                <option value="all">전체 (2~9단)</option>
+                <option value="2">2단</option>
+                <option value="3">3단</option>
+                <option value="4">4단</option>
+                <option value="5">5단</option>
+                <option value="6">6단</option>
+                <option value="7">7단</option>
+                <option value="8">8단</option>
+                <option value="9">9단</option>
+            </select>
+        </div>
+
+        <div id="problem"></div>
+        <input type="number" id="answer" placeholder="정답을 입력하세요">
+        <button onclick="checkAnswer()">정답 확인</button>
+        <button id="new-problem-btn" onclick="newProblem()">다른 문제 풀기</button>
+        <p id="result"></p>
+    </div>
+
+    <script>
+        let num1, num2;
+
+        const problemElement = document.getElementById('problem');
+        const answerInput = document.getElementById('answer');
+        const resultElement = document.getElementById('result');
+        const danSelect = document.getElementById('dan-select');
+
+        function newProblem() {
+            const selectedDan = danSelect.value;
+
+            if (selectedDan === 'all') {
+                num1 = Math.floor(Math.random() * 8) + 2; // 2부터 9까지의 난수
+            } else {
+                num1 = parseInt(selectedDan);
+            }
+            num2 = Math.floor(Math.random() * 9) + 1; // 1부터 9까지의 난수
+
+            problemElement.textContent = `${num1} × ${num2} = ?`;
+            answerInput.value = '';
+            resultElement.textContent = '';
+            answerInput.focus();
+        }
+
+        function checkAnswer() {
+            const userAnswer = answerInput.value;
+            if (userAnswer === '') {
+                resultElement.textContent = '답을 입력해주세요.';
+                resultElement.style.color = 'orange';
+                return;
+            }
+
+            const correctAnswer = num1 * num2;
+            if (parseInt(userAnswer) === correctAnswer) {
+                resultElement.textContent = '정답입니다! 🎉';
+                resultElement.style.color = 'green';
+                // 1.5초 후 자동으로 다음 문제로 넘어갑니다.
+                setTimeout(newProblem, 1500);
+            } else {
+                resultElement.textContent = '틀렸습니다. 다시 시도해보세요! 🤔';
+                resultElement.style.color = 'red';
+                // 오답 시 입력창만 비우고 포커스를 이동시켜 재도전을 유도합니다.
+                answerInput.value = '';
+                answerInput.focus();
+            }
+        }
+        
+        // 엔터 키를 누르면 정답 확인 함수가 실행됩니다.
+        answerInput.addEventListener('keyup', function(event) {
+            if (event.key === 'Enter') {
+                checkAnswer();
+            }
+        });
+
+        // 단 선택을 변경하면 바로 새로운 문제가 출제됩니다.
+        danSelect.addEventListener('change', newProblem);
+
+        // 페이지가 로드되면 첫 문제를 출제합니다.
+        window.onload = newProblem;
+    </script>
+
+</body>
+</html>
